@@ -1,0 +1,14 @@
+{
+  "name": "personal-tools",
+  "owner": {
+    "name": "Patrick O'Donnell"
+  },
+  "plugins": [
+    {
+      "name": "mermaid-inline",
+      "source": "./plugins/mermaid-inline",
+      "description": "Render mermaid code blocks inline as images via a MessageDisplay hook (go-mermaid, no Chromium)."
+    }
+  ],
+  "description": "Personal Claude Code plugins (mermaid-inline: inline diagram rendering)."
+}

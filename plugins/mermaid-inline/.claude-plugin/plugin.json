@@ -1,0 +1,7 @@
+{
+  "name": "mermaid-inline",
+  "description": "Render mermaid code blocks inline as images via a MessageDisplay hook (go-mermaid, no browser). The model emits a ```mermaid fenced block; the hook renders it to an SVG data-URI in displayContent, so it shows inline while the transcript keeps the original mermaid.",
+  "version": "0.1.0",
+  "author": { "name": "Patrick O'Donnell" },
+  "keywords": ["mermaid", "diagram", "hook", "messagedisplay"]
+}
