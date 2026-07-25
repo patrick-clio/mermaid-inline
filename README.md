@@ -17,16 +17,15 @@ images**, with **zero tool calls** and **no context pollution**.
 
 No Python, no subprocess, no `jq`, no Chromium. One binary.
 
-## Install (local marketplace)
+## Install
 
 ```
-/plugin marketplace add /Users/patrickodonnell/clio/mermaid-inline
+/plugin marketplace add patrick-clio/mermaid-inline
 /plugin install mermaid-inline@personal-tools
-/reload-plugins
 ```
 
-Or via settings (already wired for this machine): an `extraKnownMarketplaces`
-entry of source type `directory` plus `enabledPlugins`.
+Then restart Claude Code (or `/reload-plugins` where that command is available)
+to activate the hook.
 
 ## Dependencies
 
