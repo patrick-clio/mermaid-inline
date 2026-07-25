@@ -38,6 +38,20 @@ func encodeSVG(svg string) string {
 	return strings.NewReplacer("%", "%25", "#", "%23", "(", "%28", ")", "%29").Replace(svg)
 }
 
+// brTag matches an HTML line-break. go-mermaid turns <br/> into real line breaks
+// in flowcharts but renders it literally in other diagram types (sequence, etc.),
+// leaking the raw "<br/>" text into labels. Outside flowcharts, collapse it to a
+// space so the label reads as one line instead of showing the tag.
+var brTag = regexp.MustCompile(`(?i)<br\s*/?>`)
+
+func normalizeBreaks(src string) string {
+	head := strings.ToLower(strings.TrimSpace(src))
+	if strings.HasPrefix(head, "flowchart") || strings.HasPrefix(head, "graph") {
+		return src
+	}
+	return brTag.ReplaceAllString(src, " ")
+}
+
 func main() {
 	var in hookIn
 	if err := json.NewDecoder(os.Stdin).Decode(&in); err != nil {
@@ -54,7 +68,7 @@ func main() {
 		if m == nil {
 			return block
 		}
-		svg, err := mermaid.Render(m[1],
+		svg, err := mermaid.Render(normalizeBreaks(m[1]),
 			mermaid.WithTheme(mermaid.Theme("default")),
 			mermaid.WithPadding(16))
 		if err != nil || !strings.Contains(string(svg), "<svg") {
