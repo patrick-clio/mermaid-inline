@@ -1,26 +1,7 @@
 # mermaid-inline
 
-A Claude Code plugin that renders ` ```mermaid ` fenced blocks **inline as
-images**, with **zero tool calls** and **no context pollution**.
-
-## How it works
-
-1. The model writes a normal ` ```mermaid ` code block (cheap text, low thinking).
-2. A **`MessageDisplay` hook** fires as the message renders — outside the model
-   loop, so there is no extra inference round-trip.
-3. The hook (`mermaid-hook`, a single static Go binary that embeds
-   [go-mermaid](https://github.com/zkrebbekx/go-mermaid) as a library — pure Go,
-   **no headless browser**) renders each block to SVG and returns it as an
-   inline data-URI via `displayContent`.
-4. You see the diagram inline; the transcript keeps the original mermaid text
-   (`displayContent` is display-only), so context stays clean.
-
-No Python, no subprocess, no `jq`, no Chromium. One binary.
-
-A `SessionStart` hook also injects a one-line notice into the model's context
-each session, so Claude *knows* mermaid renders inline and proactively reaches
-for a diagram when it communicates better than prose. On a non-rendering surface
-the block just shows as normal code, so the notice is always safe.
+Claude Code plugin that renders ` ```mermaid ` blocks inline as diagrams — zero
+tool calls, no browser, no runtime dependencies.
 
 ## Install
 
@@ -29,41 +10,25 @@ the block just shows as normal code, so the notice is always safe.
 /plugin install mermaid-inline@patrick-clio
 ```
 
-Then restart Claude Code (or `/reload-plugins` where that command is available)
-to activate the hook.
+Restart Claude Code to activate.
+
+## How it works
+
+A `MessageDisplay` hook renders each ` ```mermaid ` block to an SVG data-URI —
+via a single static Go binary that embeds
+[go-mermaid](https://github.com/zkrebbekx/go-mermaid) (pure Go, no headless
+browser) — and swaps it into the message with `displayContent`. The transcript
+keeps the original mermaid text, so context stays clean. A `SessionStart` hook
+tells the model mermaid renders inline, so it reaches for diagrams on its own.
 
 ## Dependencies
 
-**None at runtime.** The plugin bundles prebuilt `mermaid-hook` binaries for all
-six targets (`bin/mermaid-hook_{darwin,linux,windows}_{amd64,arm64}`); the
-launcher (`scripts/run.sh`) self-selects by `uname`. Nothing to install, no Go
-toolchain, no `brew`.
+None. Prebuilt binaries for all six OS/arch targets are bundled; `scripts/run.sh`
+selects the right one by `uname`. macOS and Linux work out of the box. Windows
+binaries and `scripts/run.ps1` are bundled but untested — enable with a
+PowerShell `MessageDisplay` entry if you need it.
 
-## Cross-OS status
-
-| Platform | Status |
-|---|---|
-| macOS (arm64/amd64) | verified |
-| Linux (arm64/amd64) | binaries built; same POSIX launcher path (expected to work) |
-| Windows (arm64/amd64) | binaries built + `scripts/run.ps1` authored, **UNVERIFIED** — needs a Windows machine to confirm PowerShell stdin/stdout piping and hook exec |
-
-To enable Windows, add a second `MessageDisplay` entry to `hooks/hooks.json`:
-
-```json
-{
-  "hooks": [
-    { "type": "command", "command": "& \"${CLAUDE_PLUGIN_ROOT}/scripts/run.ps1\"", "shell": "powershell", "timeout": 15 }
-  ]
-}
-```
-
-It is left out of the active config by default: on a machine without PowerShell,
-a wrong-shell entry can emit a per-message hook-error notice. Add it once Windows
-is verified.
-
-## Rebuilding the binaries
-
-Only needed to pick up a new go-mermaid version (otherwise nothing to maintain):
+## Rebuild (only to bump go-mermaid)
 
 ```
 cd plugins/mermaid-inline/src
