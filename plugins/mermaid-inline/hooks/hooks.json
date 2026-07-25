@@ -20,6 +20,16 @@
             "timeout": 15
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "& \"${CLAUDE_PLUGIN_ROOT}/scripts/run.ps1\"",
+            "shell": "powershell",
+            "timeout": 15
+          }
+        ]
       }
     ]
   }

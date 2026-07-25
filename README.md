@@ -25,10 +25,9 @@ tells the model mermaid renders inline, so it reaches for diagrams on its own.
 
 ## Dependencies
 
-None. Prebuilt binaries for all six OS/arch targets are bundled; `scripts/run.sh`
-selects the right one by `uname`. macOS and Linux work out of the box. Windows
-binaries and `scripts/run.ps1` are bundled but untested — enable with a
-PowerShell `MessageDisplay` entry if you need it.
+None. Prebuilt binaries for all six OS/arch targets are bundled and the launcher
+picks the right one per OS. macOS and Linux are verified; Windows is enabled too
+but untested.
 
 ## Rebuild (only to bump go-mermaid)
 
