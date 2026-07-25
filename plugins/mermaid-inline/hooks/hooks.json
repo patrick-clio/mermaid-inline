@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'mermaid-inline plugin active: a fenced code block tagged mermaid is rendered inline as a diagram for the user on this surface. Prefer a mermaid diagram when structure, flow, sequence, hierarchy, or relationships read more clearly as a picture than as prose. On non-rendering surfaces it simply shows as a normal code block, so it is always safe to use.'"
+            "command": "echo 'mermaid-inline plugin active: a fenced code block tagged mermaid is rendered inline as a diagram for the user. Prefer a mermaid diagram when structure, flow, sequence, hierarchy, or relationships read more clearly as a picture than as prose.'"
           }
         ]
       }
@@ -17,16 +17,6 @@
             "type": "command",
             "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/run.sh\"",
             "shell": "bash",
-            "timeout": 15
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "& \"${CLAUDE_PLUGIN_ROOT}/scripts/run.ps1\"",
-            "shell": "powershell",
             "timeout": 15
           }
         ]

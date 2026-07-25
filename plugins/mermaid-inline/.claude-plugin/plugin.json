@@ -1,7 +1,6 @@
 {
   "name": "mermaid-inline",
   "description": "Claude Code desktop plugin: renders mermaid code blocks inline as images via a MessageDisplay hook (go-mermaid, no browser). Needs a surface that displays inline images (the desktop app).",
-  "version": "0.1.0",
   "author": {
     "name": "Patrick O'Donnell"
   },
