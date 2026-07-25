@@ -1,22 +1,25 @@
-name: build-binaries
+name: release
 
-# Cross-compiles the mermaid-hook binary for all 6 OS/arch targets and commits
-# the refreshed binaries back to the repo. Runs when the Go source changes, or
-# manually from the Actions tab. To pick up a new go-mermaid, edit src/go.mod
-# and push.
+# On every human push to main: cross-compile all 6 binaries, bump the patch
+# version, and commit the result in one push. That publishes a new version to
+# installers (which pull via autoUpdate). The bot's own commit is skipped
+# (actor guard + [skip ci]) so it never loops.
 
 on:
   push:
     branches: [main]
-    paths:
-      - "plugins/mermaid-inline/src/**"
   workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
-  build:
+  release:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,14 +39,24 @@ jobs:
               -o "../bin/mermaid-hook_${os}_${arch}${ext}" .
           done
 
-      - name: Commit refreshed binaries
+      - name: Bump patch version
+        run: |
+          set -euo pipefail
+          f=plugins/mermaid-inline/.claude-plugin/plugin.json
+          cur=$(jq -r '.version // "0.0.0"' "$f")
+          IFS=. read -r a b c <<< "$cur"
+          new="$a.$b.$((c + 1))"
+          tmp=$(mktemp); jq --arg v "$new" '.version = $v' "$f" > "$tmp" && mv "$tmp" "$f"
+          echo "VERSION=$new" >> "$GITHUB_ENV"
+
+      - name: Commit & push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add plugins/mermaid-inline/bin
+          git add -A
           if git diff --cached --quiet; then
-            echo "No binary changes."
+            echo "Nothing to commit."
           else
-            git commit -m "ci: rebuild plugin binaries"
+            git commit -m "release: v${VERSION} [skip ci]"
             git push
           fi

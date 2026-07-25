@@ -7,7 +7,8 @@
     {
       "name": "mermaid-inline",
       "source": "./plugins/mermaid-inline",
-      "description": "Claude Code desktop plugin: renders mermaid blocks inline as images (go-mermaid, no browser)."
+      "description": "Claude Code desktop plugin: renders mermaid blocks inline as images (go-mermaid, no browser).",
+      "displayName": "mermaid-inline (Claude Code desktop)"
     }
   ],
   "description": "Claude Code plugins by patrick-clio."

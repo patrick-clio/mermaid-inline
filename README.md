@@ -28,10 +28,9 @@ Verified on macOS and Linux.
 
 None.
 
-## Building
+## Building & releases
 
-Binaries are built in CI —
-[`.github/workflows/build-binaries.yml`](.github/workflows/build-binaries.yml)
-cross-compiles all six targets and commits them back whenever
-`plugins/mermaid-inline/src/` changes (or on a manual run from the Actions tab).
-To bump go-mermaid, edit `src/go.mod` and push; CI rebuilds.
+CI ([`.github/workflows/release.yml`](.github/workflows/release.yml)) runs on
+every push to `main`: it cross-compiles all six binaries, bumps the patch
+version, and commits the result — so each change ships a new version that
+installers pull automatically. To bump go-mermaid, edit `src/go.mod` and push.

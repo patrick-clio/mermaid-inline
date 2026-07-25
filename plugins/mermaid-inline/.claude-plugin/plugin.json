@@ -8,6 +8,8 @@
     "mermaid",
     "diagram",
     "hook",
-    "messagedisplay"
-  ]
+    "messagedisplay",
+    "desktop"
+  ],
+  "version": "0.1.0"
 }
