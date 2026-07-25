@@ -1,5 +1,5 @@
 {
-  "name": "personal-tools",
+  "name": "patrick-clio",
   "owner": {
     "name": "Patrick O'Donnell"
   },
@@ -10,5 +10,5 @@
       "description": "Render mermaid code blocks inline as images via a MessageDisplay hook (go-mermaid, no Chromium)."
     }
   ],
-  "description": "Personal Claude Code plugins (mermaid-inline: inline diagram rendering)."
+  "description": "Claude Code plugins by patrick-clio."
 }

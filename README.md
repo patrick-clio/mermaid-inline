@@ -21,7 +21,7 @@ No Python, no subprocess, no `jq`, no Chromium. One binary.
 
 ```
 /plugin marketplace add patrick-clio/mermaid-inline
-/plugin install mermaid-inline@personal-tools
+/plugin install mermaid-inline@patrick-clio
 ```
 
 Then restart Claude Code (or `/reload-plugins` where that command is available)
