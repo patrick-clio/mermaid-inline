@@ -1,6 +1,6 @@
 # mermaid-inline
 
-Claude Code **desktop** plugin that renders ` ```mermaid ` blocks inline as
+Claude Code **desktop** plugin that renders ` ```mermaid ``` ` blocks inline as
 diagrams — zero tool calls, no browser, no runtime dependencies. It needs a
 surface that displays inline images (the Claude Code desktop app); anywhere else
 the block just stays a normal ` ```mermaid ` code block.
