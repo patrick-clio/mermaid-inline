@@ -17,6 +17,11 @@ images**, with **zero tool calls** and **no context pollution**.
 
 No Python, no subprocess, no `jq`, no Chromium. One binary.
 
+A `SessionStart` hook also injects a one-line notice into the model's context
+each session, so Claude *knows* mermaid renders inline and proactively reaches
+for a diagram when it communicates better than prose. On a non-rendering surface
+the block just shows as normal code, so the notice is always safe.
+
 ## Install
 
 ```
