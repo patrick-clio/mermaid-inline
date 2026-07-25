@@ -3,7 +3,8 @@
 Claude Code **desktop** plugin that renders ` ```mermaid ``` ` blocks inline as
 diagrams — zero tool calls, no browser, no runtime dependencies. It needs a
 surface that displays inline images (the Claude Code desktop app); anywhere else
-the block just stays a normal ` ```mermaid ` code block.
+the block just stays a normal ` ```mermaid ` code block. Verified on macOS and
+Linux; Windows is enabled but untested.
 
 ## Install
 
@@ -25,17 +26,12 @@ tells the model mermaid renders inline, so it reaches for diagrams on its own.
 
 ## Dependencies
 
-None. Prebuilt binaries for all six OS/arch targets are bundled and the launcher
-picks the right one per OS. macOS and Linux are verified; Windows is enabled too
-but untested.
+None.
 
-## Rebuild (only to bump go-mermaid)
+## Building
 
-```
-cd plugins/mermaid-inline/src
-go get github.com/zkrebbekx/go-mermaid@latest && go mod tidy
-for t in darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64 windows/arm64; do
-  os=${t%/*}; arch=${t#*/}; ext=""; [ "$os" = windows ] && ext=.exe
-  GOOS=$os GOARCH=$arch go build -trimpath -ldflags "-s -w" -o "../bin/mermaid-hook_${os}_${arch}${ext}" .
-done
-```
+Binaries are built in CI —
+[`.github/workflows/build-binaries.yml`](.github/workflows/build-binaries.yml)
+cross-compiles all six targets and commits them back whenever
+`plugins/mermaid-inline/src/` changes (or on a manual run from the Actions tab).
+To bump go-mermaid, edit `src/go.mod` and push; CI rebuilds.

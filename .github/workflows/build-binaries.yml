@@ -1,0 +1,49 @@
+name: build-binaries
+
+# Cross-compiles the mermaid-hook binary for all 6 OS/arch targets and commits
+# the refreshed binaries back to the repo. Runs when the Go source changes, or
+# manually from the Actions tab. To pick up a new go-mermaid, edit src/go.mod
+# and push.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "plugins/mermaid-inline/src/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: plugins/mermaid-inline/src/go.mod
+
+      - name: Cross-compile all targets
+        working-directory: plugins/mermaid-inline/src
+        run: |
+          set -euo pipefail
+          for t in darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64 windows/arm64; do
+            os="${t%/*}"; arch="${t#*/}"; ext=""
+            [ "$os" = windows ] && ext=".exe"
+            GOOS="$os" GOARCH="$arch" go build -trimpath -ldflags "-s -w" \
+              -o "../bin/mermaid-hook_${os}_${arch}${ext}" .
+          done
+
+      - name: Commit refreshed binaries
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add plugins/mermaid-inline/bin
+          if git diff --cached --quiet; then
+            echo "No binary changes."
+          else
+            git commit -m "ci: rebuild plugin binaries"
+            git push
+          fi
