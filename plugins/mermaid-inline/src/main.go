@@ -38,6 +38,11 @@ func encodeSVG(svg string) string {
 	return strings.NewReplacer("%", "%25", "#", "%23", "(", "%28", ")", "%29").Replace(svg)
 }
 
+func isFlowchart(src string) bool {
+	head := strings.ToLower(strings.TrimSpace(src))
+	return strings.HasPrefix(head, "flowchart") || strings.HasPrefix(head, "graph")
+}
+
 // brTag matches an HTML line-break. go-mermaid turns <br/> into real line breaks
 // in flowcharts but renders it literally in other diagram types (sequence, etc.),
 // leaking the raw "<br/>" text into labels. Outside flowcharts, collapse it to a
@@ -45,11 +50,36 @@ func encodeSVG(svg string) string {
 var brTag = regexp.MustCompile(`(?i)<br\s*/?>`)
 
 func normalizeBreaks(src string) string {
-	head := strings.ToLower(strings.TrimSpace(src))
-	if strings.HasPrefix(head, "flowchart") || strings.HasPrefix(head, "graph") {
+	if isFlowchart(src) {
 		return src
 	}
 	return brTag.ReplaceAllString(src, " ")
+}
+
+// edge-label forms in flowcharts: -->|label|, == label ==>, -- label -->, etc.
+var (
+	pipeLabel   = regexp.MustCompile(`\|\s*([^|\n]+?)\s*\|`)
+	inlineLabel = regexp.MustCompile(`(?:--|==|-\.)\s+([^\n>|]+?)\s+(?:--|==|\.-)?>`)
+)
+
+// flowchartRankSep works around go-mermaid not reserving edge-label width in its
+// layout (it spaces ranks by a fixed RankSep and never lengthens an edge to fit
+// its label, so long labels overlap the nodes). It returns a rank gap wide enough
+// for the longest edge label, or 0 when there are no labels (keep the default).
+func flowchartRankSep(src string) float64 {
+	longest := 0
+	for _, re := range []*regexp.Regexp{pipeLabel, inlineLabel} {
+		for _, m := range re.FindAllStringSubmatch(src, -1) {
+			if n := len([]rune(strings.TrimSpace(m[1]))); n > longest {
+				longest = n
+			}
+		}
+	}
+	if longest == 0 {
+		return 0
+	}
+	// ~8px per char at fontSize 14, plus margin for arrowhead + node padding.
+	return float64(longest)*8 + 40
 }
 
 func main() {
@@ -68,9 +98,16 @@ func main() {
 		if m == nil {
 			return block
 		}
-		svg, err := mermaid.Render(normalizeBreaks(m[1]),
+		opts := []mermaid.Option{
 			mermaid.WithTheme(mermaid.Theme("default")),
-			mermaid.WithPadding(16))
+			mermaid.WithPadding(16),
+		}
+		if isFlowchart(m[1]) {
+			if sep := flowchartRankSep(m[1]); sep > 50 {
+				opts = append(opts, mermaid.WithSpacing(50, sep))
+			}
+		}
+		svg, err := mermaid.Render(normalizeBreaks(m[1]), opts...)
 		if err != nil || !strings.Contains(string(svg), "<svg") {
 			return block // leave original fence on render failure
 		}
